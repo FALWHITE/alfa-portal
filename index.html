@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal Alfa · Herramientas de la inmobiliaria</title>
+<style>
+  :root{
+    --blue:#1f6fb2;
+    --blue-dark:#144d80;
+    --orange:#e2241b;
+    --orange-bg:#fdf1ef;
+    --gray-row:#f4f6f8;
+    --gray-border:#dfe4ea;
+    --ink:#1c2733;
+    --muted:#5d7593;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--gray-row);
+    color:var(--ink);
+  }
+  header{
+    background:var(--blue-dark);
+    color:#fff;
+    padding:28px 20px;
+    text-align:center;
+  }
+  header img{
+    height:64px;
+    display:block;
+    margin:0 auto 12px;
+  }
+  header h1{
+    margin:0;
+    font-size:22px;
+    font-weight:600;
+  }
+  header p{
+    margin:6px 0 0;
+    font-size:14px;
+    color:#cfe0ef;
+  }
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:32px 20px 60px;
+  }
+  section{margin-bottom:36px;}
+  section h2{
+    font-size:16px;
+    color:var(--blue-dark);
+    border-bottom:2px solid var(--gray-border);
+    padding-bottom:8px;
+    margin-bottom:16px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:16px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--gray-border);
+    border-radius:10px;
+    padding:18px;
+    text-decoration:none;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    transition:box-shadow .15s ease, transform .15s ease;
+  }
+  .card:hover{
+    box-shadow:0 4px 14px rgba(20,77,128,0.15);
+    transform:translateY(-2px);
+    border-color:var(--blue);
+  }
+  .card .icon{font-size:26px;}
+  .card h3{
+    margin:0;
+    font-size:15px;
+    color:var(--blue-dark);
+  }
+  .card p{
+    margin:0;
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.4;
+  }
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    padding:20px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <img src="assets/logo.png" alt="Alfa Inmobiliaria">
+  <h1>Portal de herramientas · Alfa</h1>
+  <p>Generador de documentos para el equipo</p>
+</header>
+<main>
+  <section>
+    <h2>Documentos legales</h2>
+    <div class="grid">
+      <a class="card" href="documentos/contrato-de-arras.html">
+        <span class="icon">📄</span>
+        <h3>Contrato de arras</h3>
+        <p>Rellena los datos y genera el contrato de arras listo para imprimir o guardar en PDF.</p>
+      </a>
+      <a class="card" href="documentos/contrato-de-arrendamiento.html">
+        <span class="icon">📄</span>
+        <h3>Contrato de arrendamiento</h3>
+        <p>Genera el contrato de alquiler completo a partir de un formulario.</p>
+      </a>
+      <a class="card" href="documentos/recibo-de-reserva.html">
+        <span class="icon">🧾</span>
+        <h3>Recibo de señal / reserva</h3>
+        <p>Crea el recibo de la señal de reserva de una vivienda.</p>
+      </a>
+      <a class="card" href="documentos/parte-de-visita.html">
+        <span class="icon">🏠</span>
+        <h3>Parte de visita</h3>
+        <p>Genera el parte de visita a una propiedad.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Marketing</h2>
+    <div class="grid">
+      <a class="card" href="documentos/flyer-google-reviews.html">
+        <span class="icon">⭐</span>
+        <h3>Flyer Google Reviews</h3>
+        <p>Flyer interactivo para pedir reseñas de Google a los clientes.</p>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>Utilidades</h2>
+    <div class="grid">
+      <a class="card" href="documentos/intercalar-hojas-escaneadas.html">
+        <span class="icon">🗂️</span>
+        <h3>Intercalar hojas escaneadas</h3>
+        <p>Une las hojas de un escáner dúplex (pares e impares escaneados por separado) en un único PDF.</p>
+      </a>
+    </div>
+  </section>
+</main>
+<footer>
+  Uso interno · Alfa Inmobiliaria
+</footer>
+</body>
+</html>
