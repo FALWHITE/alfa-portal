@@ -840,6 +840,64 @@ function exportarPDF() {
   const fechaFile = exportTs.toISOString().split('T')[0];
   doc.save('ParteVisita_Alfa_'+nombreCliente+'_'+fechaFile+'.pdf');
   showToast('✅ PDF generado con timestamp: '+exportHora);
+
+  archivarParte(doc, intDom, exportStr);
+}
+
+// ── ARCHIVO CENTRAL ───────────────────────────────────────────
+// Envía el parte firmado a Drive, lo anota en la hoja de registro y manda la
+// copia al interesado. Así queda constancia en la empresa y no en el móvil de
+// quien hizo la visita.
+const URL_ARCHIVO = 'https://script.google.com/macros/s/AKfycbxqMMYU_ogEGQ40XQgZImZLZyU12QLHsGyPXrXiKOpMEP8ZHZZJQ8NFTdYzIMwn5lbrAQ/exec';
+
+// La clave no se escribe aquí: esta página es pública y cualquiera podría
+// leerla. Cada asesor la introduce una vez y su navegador la recuerda.
+function claveArchivo() {
+  let clave = localStorage.getItem('alfa_clave_archivo');
+  if (!clave) {
+    clave = prompt('Clave de archivo de Alfa\n(solo la primera vez en este dispositivo):');
+    if (clave) localStorage.setItem('alfa_clave_archivo', clave.trim());
+  }
+  return clave ? clave.trim() : null;
+}
+
+async function archivarParte(doc, intDom, fechaTexto) {
+  const clave = claveArchivo();
+  if (!clave) { showToast('⚠️ Sin clave: el parte NO se ha archivado'); return; }
+
+  const val = id => (document.getElementById(id)?.value || '').trim();
+  const inmueble = [val('inm_dir'), val('inm_mun')].filter(Boolean).join(', ');
+
+  showToast('⏳ Archivando el parte…');
+  try {
+    // text/plain evita la comprobación previa de CORS, que Apps Script no admite
+    const respuesta = await fetch(URL_ARCHIVO, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        token: clave,
+        fecha: fechaTexto,
+        inmueble: inmueble,
+        referencia: val('inm_ref'),
+        agente: val('ag_nombre'),
+        interesado: intDom[0] || {},
+        pdfBase64: doc.output('datauristring').split('base64,')[1],
+      }),
+    });
+    const res = await respuesta.json();
+
+    if (res.ok) {
+      showToast(res.enviado ? '✅ Archivado y enviado al interesado'
+                            : '✅ Archivado (el interesado no tenía email)');
+    } else {
+      // Si la clave es incorrecta, se olvida para volver a pedirla
+      if (/clave/i.test(res.error || '')) localStorage.removeItem('alfa_clave_archivo');
+      showToast('⚠️ No se pudo archivar: ' + res.error);
+    }
+  } catch (e) {
+    // El PDF ya está descargado, así que el parte no se pierde
+    showToast('⚠️ Sin conexión: no se archivó. El PDF sí se ha descargado.');
+  }
 }
 </script>
 </body>
