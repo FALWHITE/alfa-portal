@@ -33,9 +33,14 @@
     text-align:center;
   }
   header img{
-    height:64px;
+    width:100%;
+    max-width:300px;
+    height:auto;
     display:block;
-    margin:0 auto 12px;
+    margin:0 auto 16px;
+    /* El logo lleva fondo claro: las esquinas redondeadas evitan que se lea
+       como un recorte blanco pegado sobre el azul de la cabecera */
+    border-radius:10px;
   }
   header h1{
     margin:0;
