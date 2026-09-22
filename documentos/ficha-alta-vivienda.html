@@ -96,20 +96,26 @@
     <div class="panel" id="panel-cat"></div>
   </section>
 
+  <section id="sec-hecho" hidden>
+    <h2>3. Ya volcado en la ficha de Alfa <span class="etiqueta ok">para revisar</span></h2>
+    <p class="nota">Esto ya está grabado en <b>admin.alfainmo.com</b>, con el inmueble todavía de baja. Repásalo y dime si algo no cuadra.</p>
+    <div class="panel" id="panel-hecho"></div>
+  </section>
+
   <section>
-    <h2>3. Esto no se ve en las fotos <span class="etiqueta falta">lo pones tú</span></h2>
+    <h2>4. Esto no se ve en las fotos <span class="etiqueta falta">lo pones tú</span></h2>
     <p class="nota">Ni el reportaje ni el vídeo lo resuelven. Si algo no aplica, déjalo vacío. <b id="contador" class="contador"></b></p>
     <div class="panel" id="panel-falta"></div>
   </section>
 
   <section>
-    <h2>4. Deducido de las fotos <span class="etiqueta rev">revisar</span></h2>
+    <h2>5. Deducido de las fotos <span class="etiqueta rev">revisar</span></h2>
     <p class="nota">Esto lo he leído yo del material. Corrige lo que esté mal.</p>
     <div class="panel" id="panel-deduc"></div>
   </section>
 
   <section>
-    <h2>5. Devolverme la ficha</h2>
+    <h2>6. Devolverme la ficha</h2>
     <p class="nota">Cópialo y pégamelo en el chat. Con eso relleno la ficha de Alfa y preparo Idealista.</p>
     <textarea class="resumen" id="salida" readonly></textarea>
     <div class="acciones">
@@ -163,7 +169,7 @@ var DEDUC=[
 ];
 
 var CLAVE="alfa-ficha-alta";
-var estado={}, notas={}, catastro=[], cabecera={};
+var estado={}, notas={}, catastro=[], cabecera={}, hecho=[];
 
 function q(id){return document.getElementById(id);}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
@@ -205,6 +211,28 @@ function pintaCat(){
   q("panel-cat").innerHTML=catastro.map(function(r){
     return '<div class="fila"><div class="campo"><span class="nombre">'+esc(r[0])+'</span></div><div class="solo-lectura">'+esc(r[1])+'</div></div>';
   }).join("");
+}
+
+function pintaHecho(){
+  var sec=q("sec-hecho");
+  if(!hecho.length){ sec.hidden=true; return; }
+  sec.hidden=false;
+  q("panel-hecho").innerHTML=hecho.map(function(r){
+    return '<div class="fila"><div class="campo"><span class="nombre">'+esc(r[0])+'</span>'
+      +(r[2]?'<span class="pista">'+r[2]+'</span>':'')
+      +'</div><div class="solo-lectura">'+esc(r[1])+'</div></div>';
+  }).join("");
+}
+
+function cargar(d){
+  cabecera={ref:d.ref||"",direccion:d.direccion||""};
+  catastro=Array.isArray(d.catastro)?d.catastro:[];
+  hecho=Array.isArray(d.hecho)?d.hecho:[];
+  notas=d.notas||{};
+  var val=d.valores||{};
+  Object.keys(val).forEach(function(k){ estado[k]=val[k]; });
+  repinta(); guarda();
+  if(cabecera.ref) document.title="Ficha "+cabecera.ref+" · Portal Alfa";
 }
 
 function recoge(){
@@ -252,25 +280,18 @@ function texto(){
 function guarda(){
   recoge(); contador();
   q("salida").value=texto();
-  try{ localStorage.setItem(CLAVE,JSON.stringify({estado:estado,notas:notas,catastro:catastro,cabecera:cabecera})); }catch(e){}
+  try{ localStorage.setItem(CLAVE,JSON.stringify({estado:estado,notas:notas,catastro:catastro,cabecera:cabecera,hecho:hecho})); }catch(e){}
 }
 
-function repinta(){ pintaCat(); pinta(FALTA,"panel-falta",true); pinta(DEDUC,"panel-deduc",false); contador(); q("salida").value=texto(); }
+function repinta(){ pintaCat(); pintaHecho(); pinta(FALTA,"panel-falta",true); pinta(DEDUC,"panel-deduc",false); contador(); q("salida").value=texto(); }
 
 q("btn-cargar").addEventListener("click",function(){
   var txt=q("entrada").value.trim();
   if(!txt){ q("estado-carga").textContent="Pega antes el bloque de datos."; return; }
   try{
-    var d=JSON.parse(txt);
-    cabecera={ref:d.ref||"",direccion:d.direccion||""};
-    catastro=Array.isArray(d.catastro)?d.catastro:[];
-    notas=d.notas||{};
-    var val=d.valores||{};
-    Object.keys(val).forEach(function(k){ estado[k]=val[k]; });
-    repinta(); guarda();
+    cargar(JSON.parse(txt));
     q("estado-carga").textContent="Cargado"+(cabecera.ref?" · "+cabecera.ref:"")+".";
     q("estado-carga").className="estado ok";
-    if(cabecera.ref) document.title="Ficha "+cabecera.ref+" · Portal Alfa";
   }catch(e){
     q("estado-carga").textContent="Ese texto no es un bloque válido. Pídemelo otra vez en el chat.";
     q("estado-carga").className="estado";
@@ -291,7 +312,7 @@ q("btn-copiar").addEventListener("click",function(){
 
 q("btn-vaciar").addEventListener("click",function(){
   if(!confirm("¿Vaciar el formulario y borrar el borrador guardado?")) return;
-  estado={}; notas={}; catastro=[]; cabecera={};
+  estado={}; notas={}; catastro=[]; cabecera={}; hecho=[];
   try{ localStorage.removeItem(CLAVE); }catch(e){}
   q("entrada").value=""; q("estado-carga").textContent=""; document.title="Ficha de alta · Portal Alfa";
   repinta();
@@ -303,9 +324,28 @@ document.addEventListener("change",function(e){ if(e.target.dataset&&e.target.da
 
 try{
   var g=localStorage.getItem(CLAVE);
-  if(g){ var d=JSON.parse(g); estado=d.estado||{}; notas=d.notas||{}; catastro=d.catastro||[]; cabecera=d.cabecera||{}; }
+  if(g){ var d=JSON.parse(g); estado=d.estado||{}; notas=d.notas||{}; catastro=d.catastro||[]; cabecera=d.cabecera||{}; hecho=d.hecho||[]; }
 }catch(e){}
 repinta();
+
+// Carga automática: Claude pasa un enlace con los datos detrás de #d=
+(function(){
+  var h=location.hash||"";
+  var i=h.indexOf("#d=");
+  if(i<0) return;
+  try{
+    var b=h.slice(i+3).replace(/-/g,"+").replace(/_/g,"/");
+    while(b.length%4) b+="=";
+    var bin=atob(b), bytes=new Uint8Array(bin.length);
+    for(var j=0;j<bin.length;j++) bytes[j]=bin.charCodeAt(j);
+    cargar(JSON.parse(new TextDecoder("utf-8").decode(bytes)));
+    q("estado-carga").textContent="Cargado desde el enlace"+(cabecera.ref?" · "+cabecera.ref:"")+".";
+    q("estado-carga").className="estado ok";
+    history.replaceState(null,"",location.pathname);
+  }catch(e){
+    q("estado-carga").textContent="El enlace venía dañado. Pídemelo otra vez.";
+  }
+})();
 </script>
 </body>
 </html>
