@@ -33,6 +33,16 @@
   .fila{display:grid;grid-template-columns:1fr 260px;gap:10px 20px;align-items:start;padding:14px 18px;border-top:1px solid var(--gris-linea);}
   .fila:first-child{border-top:none;}
   .fila.pendiente{background:var(--ambar-fondo);}
+
+  /* Lo que falta: rojo, y solo en lo que está de verdad vacío */
+  .fila[data-vacio="1"]{background:var(--rojo-fondo);border-left:4px solid var(--rojo);padding-left:14px;}
+  .fila[data-vacio="1"] .nombre{color:var(--rojo);}
+  .fila[data-vacio="1"] .nombre::after{content:" · FALTA";font-size:10.5px;font-weight:bold;letter-spacing:.5px;}
+  .fila[data-vacio="1"] input,.fila[data-vacio="1"] select,.fila[data-vacio="1"] textarea{border-color:var(--rojo);box-shadow:inset 0 0 0 1px var(--rojo);}
+  .fila[data-vacio="0"] .nombre::after{content:" \2713";color:var(--verde);font-weight:bold;}
+  .resumen-falta{color:var(--rojo);font-weight:bold;}
+  .resumen-falta.completo{color:var(--verde);}
+  .lista-falta{display:block;margin-top:6px;color:var(--rojo);font-size:12.5px;line-height:1.5;}
   .campo{min-width:0;}
   .campo .nombre{font-size:14px;font-weight:bold;display:block;margin-bottom:3px;}
   .campo .pista{font-size:12.5px;color:var(--muted);line-height:1.45;}
@@ -109,7 +119,7 @@
 
   <section>
     <h2><span class="n"></span>Esto no se ve en las fotos <span class="etiqueta falta">lo pones tú</span></h2>
-    <p class="nota">Ni el reportaje ni el vídeo lo resuelven. Si algo no aplica, déjalo vacío. <b id="contador" class="contador"></b></p>
+    <p class="nota">Ni el reportaje ni el vídeo lo resuelven. Si algo no aplica, déjalo vacío. <b id="contador" class="contador resumen-falta"></b><span class="lista-falta" id="lista-falta"></span></p>
     <div class="panel" id="panel-falta"></div>
   </section>
 
@@ -201,7 +211,7 @@ function control(f){
 function pinta(lista,destino,pendiente){
   q(destino).innerHTML=lista.map(function(f){
     var pista=notas[f.id]||f.p||"";
-    return '<div class="fila'+(pendiente?" pendiente":"")+'">'
+    return '<div class="fila'+(pendiente?" pendiente":"")+'" data-fila="'+f.id+'">'
       +'<div class="campo"><span class="nombre">'+esc(f.n)+'</span>'
       +(pista?'<span class="pista">'+pista+'</span>':'')+'</div>'
       +'<div class="valor">'+control(f)+'</div></div>';
@@ -254,9 +264,17 @@ function recoge(){
 function vacio(v){return v===undefined||v===""||v===null||(Array.isArray(v)&&!v.length);}
 
 function contador(){
-  var n=0;
-  FALTA.forEach(function(f){ if(vacio(estado[f.id])) n++; });
-  q("contador").textContent=n?("Quedan "+n+" por rellenar."):"Completo.";
+  var faltan=[];
+  FALTA.concat(DEDUC).forEach(function(f){
+    var fila=document.querySelector('[data-fila="'+f.id+'"]');
+    var v=vacio(estado[f.id]);
+    if(fila) fila.setAttribute("data-vacio", v?"1":"0");
+    if(v && FALTA.indexOf(f)>=0) faltan.push(f.n);
+  });
+  var c=q("contador");
+  c.textContent = faltan.length ? ("Faltan "+faltan.length+":") : "Completo, no falta nada.";
+  c.className = "contador resumen-falta"+(faltan.length?"":" completo");
+  q("lista-falta").textContent = faltan.join(" · ");
 }
 
 function texto(){
