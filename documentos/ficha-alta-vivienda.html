@@ -50,7 +50,9 @@
   button:hover{border-color:var(--blue);color:var(--blue-dark);}
   button.principal{background:var(--blue-dark);border-color:var(--blue-dark);color:#fff;}
   button.principal:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
-  button:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  button:focus-visible,.boton-archivo:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+  .boton-archivo{display:inline-block;font-family:inherit;font-size:14px;font-weight:bold;border-radius:8px;padding:9px 16px;cursor:pointer;background:var(--blue-dark);border:1px solid var(--blue-dark);color:#fff;}
+  .boton-archivo:hover{background:var(--blue);border-color:var(--blue);}
   .estado{font-size:13px;color:var(--muted);}
   .estado.ok{color:var(--verde);}
   .estado.mal{color:var(--rojo);font-weight:bold;max-width:60ch;}
@@ -83,10 +85,12 @@
 
   <section>
     <h2><span class="n"></span>Cargar la vivienda</h2>
-    <p class="nota">Lo normal es que abras el <b>enlace</b> que te paso por el chat: la ficha se rellena sola y este paso te lo saltas. Este cuadro es el plan B, y espera el bloque de datos completo, el que empieza por <code>{</code> — no la referencia del inmueble.</p>
+    <p class="nota">Lo normal: <b>«Cargar desde archivo»</b> y elige el <code>datos-alta.json</code> que dejo en la carpeta de la vivienda en Drive, junto a las fotos. El cuadro de abajo es el plan B, por si prefieres pegar el bloque a mano; espera el texto que empieza por <code>{</code>, no la referencia del inmueble.</p>
     <textarea class="resumen" id="entrada" style="min-height:90px" placeholder='{"ref":"6954/975", ...}'></textarea>
     <div class="acciones">
-      <button type="button" class="principal" id="btn-cargar">Cargar datos</button>
+      <label class="boton-archivo" for="archivo">Cargar desde archivo…</label>
+      <input type="file" id="archivo" accept=".json,application/json" hidden>
+      <button type="button" id="btn-cargar">Cargar lo pegado arriba</button>
       <span class="estado" id="estado-carga"></span>
     </div>
   </section>
@@ -314,6 +318,30 @@ q("btn-cargar").addEventListener("click",function(){
   cargar(d);
   q("estado-carga").textContent="Cargado"+(cabecera.ref?" · "+cabecera.ref:"")+".";
   q("estado-carga").className="estado ok";
+});
+
+q("archivo").addEventListener("change",function(ev){
+  var f=ev.target.files&&ev.target.files[0];
+  if(!f) return;
+  var lector=new FileReader();
+  lector.onload=function(){
+    var d=null;
+    try{ d=JSON.parse(String(lector.result)); }catch(e){ d=null; }
+    if(!d||typeof d!=="object"||Array.isArray(d)||!(d.valores||d.catastro||d.hecho||d.ref)){
+      q("estado-carga").className="estado mal";
+      q("estado-carga").textContent="Ese archivo no tiene el formato esperado. Debe ser el datos-alta.json de la carpeta de la vivienda.";
+      return;
+    }
+    cargar(d);
+    q("estado-carga").className="estado ok";
+    q("estado-carga").textContent="Cargado desde "+f.name+(cabecera.ref?" · "+cabecera.ref:"")+".";
+  };
+  lector.onerror=function(){
+    q("estado-carga").className="estado mal";
+    q("estado-carga").textContent="No se ha podido leer el archivo.";
+  };
+  lector.readAsText(f,"utf-8");
+  ev.target.value="";
 });
 
 q("btn-copiar").addEventListener("click",function(){
