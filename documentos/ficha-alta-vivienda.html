@@ -53,6 +53,7 @@
   button:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
   .estado{font-size:13px;color:var(--muted);}
   .estado.ok{color:var(--verde);}
+  .estado.mal{color:var(--rojo);font-weight:bold;max-width:60ch;}
 
   .resumen{width:100%;min-height:200px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.5;border:1px solid var(--gray-border);border-radius:8px;padding:12px;background:#fff;color:var(--ink);resize:vertical;}
   .aviso{background:var(--orange-bg);border:1px solid var(--ambar-borde);border-left:4px solid var(--orange);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.55;color:var(--ink);margin-bottom:24px;max-width:70ch;}
@@ -81,8 +82,8 @@
   </div>
 
   <section>
-    <h2>1. Cargar la vivienda</h2>
-    <p class="nota">Pega aquí el bloque que te paso por el chat con lo que he sacado del catastro y de las fotos. Rellena el formulario de golpe. Si prefieres empezar en blanco, salta este paso.</p>
+    <h2><span class="n"></span>Cargar la vivienda</h2>
+    <p class="nota">Lo normal es que abras el <b>enlace</b> que te paso por el chat: la ficha se rellena sola y este paso te lo saltas. Este cuadro es el plan B, y espera el bloque de datos completo, el que empieza por <code>{</code> — no la referencia del inmueble.</p>
     <textarea class="resumen" id="entrada" style="min-height:90px" placeholder='{"ref":"6954/975", ...}'></textarea>
     <div class="acciones">
       <button type="button" class="principal" id="btn-cargar">Cargar datos</button>
@@ -91,31 +92,31 @@
   </section>
 
   <section>
-    <h2>2. Identificación <span class="etiqueta ok">catastro</span></h2>
+    <h2><span class="n"></span>Identificación <span class="etiqueta ok">catastro</span></h2>
     <p class="nota" id="nota-cat">Se rellena al cargar los datos. Viene del catastro, así que no hace falta que lo toques.</p>
     <div class="panel" id="panel-cat"></div>
   </section>
 
   <section id="sec-hecho" hidden>
-    <h2>3. Ya volcado en la ficha de Alfa <span class="etiqueta ok">para revisar</span></h2>
+    <h2><span class="n"></span>Ya volcado en la ficha de Alfa <span class="etiqueta ok">para revisar</span></h2>
     <p class="nota">Esto ya está grabado en <b>admin.alfainmo.com</b>, con el inmueble todavía de baja. Repásalo y dime si algo no cuadra.</p>
     <div class="panel" id="panel-hecho"></div>
   </section>
 
   <section>
-    <h2>4. Esto no se ve en las fotos <span class="etiqueta falta">lo pones tú</span></h2>
+    <h2><span class="n"></span>Esto no se ve en las fotos <span class="etiqueta falta">lo pones tú</span></h2>
     <p class="nota">Ni el reportaje ni el vídeo lo resuelven. Si algo no aplica, déjalo vacío. <b id="contador" class="contador"></b></p>
     <div class="panel" id="panel-falta"></div>
   </section>
 
   <section>
-    <h2>5. Deducido de las fotos <span class="etiqueta rev">revisar</span></h2>
+    <h2><span class="n"></span>Deducido de las fotos <span class="etiqueta rev">revisar</span></h2>
     <p class="nota">Esto lo he leído yo del material. Corrige lo que esté mal.</p>
     <div class="panel" id="panel-deduc"></div>
   </section>
 
   <section>
-    <h2>6. Devolverme la ficha</h2>
+    <h2><span class="n"></span>Devolverme la ficha</h2>
     <p class="nota">Cópialo y pégamelo en el chat. Con eso relleno la ficha de Alfa y preparo Idealista.</p>
     <textarea class="resumen" id="salida" readonly></textarea>
     <div class="acciones">
@@ -283,19 +284,36 @@ function guarda(){
   try{ localStorage.setItem(CLAVE,JSON.stringify({estado:estado,notas:notas,catastro:catastro,cabecera:cabecera,hecho:hecho})); }catch(e){}
 }
 
-function repinta(){ pintaCat(); pintaHecho(); pinta(FALTA,"panel-falta",true); pinta(DEDUC,"panel-deduc",false); contador(); q("salida").value=texto(); }
+function numera(){
+  var n=0;
+  Array.prototype.forEach.call(document.querySelectorAll("main > section"),function(sec){
+    if(sec.hidden) return;
+    n++;
+    var e=sec.querySelector("h2 .n");
+    if(e) e.textContent=n+". ";
+  });
+}
+
+function repinta(){ pintaCat(); pintaHecho(); numera(); pinta(FALTA,"panel-falta",true); pinta(DEDUC,"panel-deduc",false); contador(); q("salida").value=texto(); }
 
 q("btn-cargar").addEventListener("click",function(){
   var txt=q("entrada").value.trim();
   if(!txt){ q("estado-carga").textContent="Pega antes el bloque de datos."; return; }
-  try{
-    cargar(JSON.parse(txt));
-    q("estado-carga").textContent="Cargado"+(cabecera.ref?" · "+cabecera.ref:"")+".";
-    q("estado-carga").className="estado ok";
-  }catch(e){
-    q("estado-carga").textContent="Ese texto no es un bloque válido. Pídemelo otra vez en el chat.";
-    q("estado-carga").className="estado";
+  var d=null;
+  try{ d=JSON.parse(txt); }catch(e){ d=null; }
+  var util = d && typeof d==="object" && !Array.isArray(d) &&
+             (d.valores||d.catastro||d.hecho||d.ref);
+  if(!util){
+    var ref=txt.match(/^\s*(?:6954\s*\/\s*)?(\d{1,5})\s*$/);
+    q("estado-carga").className="estado mal";
+    q("estado-carga").textContent = ref
+      ? "Eso es la referencia del inmueble, no el bloque de datos. Pídeme en el chat el enlace de la "+ref[1]+" y ábrelo: la ficha se rellena sola."
+      : "Eso no es un bloque de datos. Tiene que empezar por «{». Lo más cómodo es pedirme el enlace en el chat.";
+    return;
   }
+  cargar(d);
+  q("estado-carga").textContent="Cargado"+(cabecera.ref?" · "+cabecera.ref:"")+".";
+  q("estado-carga").className="estado ok";
 });
 
 q("btn-copiar").addEventListener("click",function(){
