@@ -1,0 +1,64 @@
+/* ------------------------------------------------------------------
+   Portal Alfa · identidad común
+   Único sitio donde se definen el color y la tipografía del portal.
+   Cambia un valor aquí y cambia en todas las herramientas.
+
+   No lo usan dos páginas a propósito:
+     · flyer-google-reviews.html  -> pieza de imprenta, lleva los colores
+                                     de marca de Google y su paleta dorada.
+     · intercalar-hojas-escaneadas.html -> interfaz oscura propia; solo
+                                     comparte la tipografía.
+   ------------------------------------------------------------------ */
+
+:root{
+  /* Azules corporativos */
+  --azul:#1f6fb2;
+  --azul-oscuro:#144d80;
+  --azul-claro:#cfe0ef;
+  --azul-tenue:#f0f5fb;
+
+  /* Rojo Alfa */
+  --rojo:#e2241b;
+  --rojo-oscuro:#9b1c1c;
+  --rojo-fondo:#fdf1ef;
+
+  /* Neutros */
+  --ink:#1c2733;
+  --tinta:#1c2733;
+  --tinta-suave:#5d7593;
+  --gris-fondo:#f4f6f8;
+  --gris-row:#f4f6f8;
+  --gris-borde:#dfe4ea;
+  --gris-linea:#eef1f5;
+
+  /* Semánticos */
+  --verde:#1d6b3c;
+  --verde-fondo:#eaf5ee;
+  --verde-borde:#c3e2ce;
+  --ambar:#8a5a08;
+  --ambar-fondo:#fdf6e8;
+  --ambar-borde:#f0dcae;
+
+  /* Tipografía: Arial existe en Windows y en macOS, así que la misma
+     herramienta se ve igual la abra quien la abra. */
+  --fuente:Arial, Helvetica, sans-serif;
+
+  /* Nombres heredados: las páginas antiguas los usaban con estos
+     identificadores en inglés. Se mantienen para no reescribirlas. */
+  --blue:#1f6fb2;
+  --blue-dark:#144d80;
+  --orange:#e2241b;
+  --orange-bg:#fdf1ef;
+  --gray-row:#f4f6f8;
+  --gray-border:#dfe4ea;
+  --muted:#5d7593;
+
+  --fuente-mono:ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  font-family:var(--fuente);
+  color:var(--tinta);
+}

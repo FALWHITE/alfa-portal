@@ -7,21 +7,22 @@
 <meta name="robots" content="noindex, nofollow">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../assets/estilo.css">
 <title>Contrato de Arrendamiento · Alfa Inmobiliaria</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    --azul: #1A4F8A;
-    --azul-med: #2E75B6;
-    --azul-claro: #D6E4F4;
-    --azul-bg: #F0F5FB;
-    --rojo: #C0392B;
-    --gris: #6B7280;
-    --borde: #D1D5DB;
+    --azul: var(--azul-oscuro);
+    --azul-med: var(--azul);
+    --azul-claro: var(--azul-claro);
+    --azul-bg: var(--azul-tenue);
+    --rojo: var(--rojo);
+    --gris: var(--tinta-suave);
+    --borde: var(--gris-borde);
     --radio: 10px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #F3F6FA; color: #1a1a1a; min-height: 100vh; }
+  body { font-family:var(--fuente); background: var(--azul-tenue); color: var(--tinta); min-height: 100vh; }
 
   /* HEADER */
   .header { background: var(--azul); padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
@@ -56,7 +57,7 @@
   .grid-2 { grid-template-columns: 1fr 1fr; }
   .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
   .field { display: flex; flex-direction: column; gap: 4px; }
-  .field label { font-size: 0.78rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.04em; }
+  .field label { font-size: 0.78rem; font-weight: 600; color: var(--tinta); text-transform: uppercase; letter-spacing: 0.04em; }
   .field input, .field select, .field textarea {
     border: 1.5px solid var(--borde); border-radius: var(--radio);
     padding: 0.6rem 0.8rem; font-size: 0.9rem; font-family: inherit;
@@ -74,9 +75,9 @@
   .section-divider { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--azul-med); padding: 0.5rem 0 0.3rem; border-bottom: 1.5px solid var(--azul-claro); margin: 1.5rem 0 1rem; }
 
   /* INFO BOX */
-  .info-box { background: var(--azul-bg); border-left: 3px solid var(--azul-med); border-radius: 0 var(--radio) var(--radio) 0; padding: 0.75rem 1rem; font-size: 0.82rem; color: #374151; margin: 1rem 0; }
+  .info-box { background: var(--azul-bg); border-left: 3px solid var(--azul-med); border-radius: 0 var(--radio) var(--radio) 0; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--tinta); margin: 1rem 0; }
   .info-box strong { color: var(--azul); }
-  .warn-box { background: #FFF9E6; border-left: 3px solid #E0A800; border-radius: 0 var(--radio) var(--radio) 0; padding: 0.75rem 1rem; font-size: 0.82rem; color: #374151; margin: 1rem 0; }
+  .warn-box { background: var(--ambar-fondo); border-left: 3px solid var(--ambar); border-radius: 0 var(--radio) var(--radio) 0; padding: 0.75rem 1rem; font-size: 0.82rem; color: var(--tinta); margin: 1rem 0; }
 
   /* CARD */
   .card { background: #fff; border: 1px solid var(--borde); border-radius: 12px; padding: 1.25rem; }
@@ -87,7 +88,7 @@
   .toggle.on { background: var(--azul-med); }
   .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
   .toggle.on::after { transform: translateX(18px); }
-  .toggle-label { font-size: 0.88rem; color: #374151; }
+  .toggle-label { font-size: 0.88rem; color: var(--tinta); }
 
   /* NAVIGATION */
   .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--borde); }
@@ -96,12 +97,12 @@
   .btn-primary:hover { background: var(--azul-med); }
   .btn-outline { background: transparent; color: var(--azul); border: 1.5px solid var(--azul); }
   .btn-outline:hover { background: var(--azul-bg); }
-  .btn-success { background: #166534; color: #fff; font-size: 1rem; padding: 0.8rem 2rem; }
-  .btn-success:hover { background: #15803d; }
-  .btn-word { background: #1A5C2A; color: #fff; font-size: 1rem; padding: 0.8rem 2rem; border-radius: var(--radio); font-weight:600; cursor:pointer; border:none; transition:all 0.15s; }
-  .btn-word:hover { background: #166534; }
+  .btn-success { background: var(--verde); color: #fff; font-size: 1rem; padding: 0.8rem 2rem; }
+  .btn-success:hover { background: var(--verde); }
+  .btn-word { background: var(--verde); color: #fff; font-size: 1rem; padding: 0.8rem 2rem; border-radius: var(--radio); font-weight:600; cursor:pointer; border:none; transition:all 0.15s; }
+  .btn-word:hover { background: var(--verde); }
   .btn-pdf { background: var(--rojo); color: #fff; font-size: 1rem; padding: 0.8rem 2rem; }
-  .btn-pdf:hover { background: #9b1c1c; }
+  .btn-pdf:hover { background: var(--rojo-oscuro); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* RESUMEN */
@@ -128,7 +129,7 @@
 </head>
 <style>@media print{.no-print{display:none !important;}}</style>
 <body>
-<div style="background:#144d80;color:#fff;font-family:Arial,Helvetica,sans-serif;font-size:13px;padding:8px 16px;display:flex;align-items:center;gap:8px;" class="no-print"><a href="../index.html" style="color:#fff;text-decoration:none;font-weight:bold;">&larr; Portal Alfa</a></div>
+<div style="background:var(--azul-oscuro);color:#fff;font-family:var(--fuente);font-size:13px;padding:8px 16px;display:flex;align-items:center;gap:8px;" class="no-print"><a href="../index.html" style="color:#fff;text-decoration:none;font-weight:bold;">&larr; Portal Alfa</a></div>
 
 <div class="header">
   <div class="header-logo">
@@ -258,7 +259,7 @@
     <div class="grid grid-3">
       <div class="field required"><label>Fecha de inicio</label><input type="date" id="eco_inicio"></div>
       <div class="field required"><label>Duración (años)</label><input type="number" id="eco_duracion" min="1" max="20" placeholder="5" value="5"></div>
-      <div class="field"><label>Fecha fin (auto)</label><input type="text" id="eco_fin" readonly style="background:#f9f9f9;color:var(--gris);" placeholder="Se calcula sola"></div>
+      <div class="field"><label>Fecha fin (auto)</label><input type="text" id="eco_fin" readonly style="background:var(--gris-fondo);color:var(--gris);" placeholder="Se calcula sola"></div>
     </div>
 
     <div class="toggle-row">
@@ -283,8 +284,8 @@
       <strong>Fianza legal:</strong> La LAU establece 1 mensualidad de renta como fianza obligatoria. La garantía adicional también será de 1 mensualidad (art. 36.5 LAU).
     </div>
     <div class="grid grid-2">
-      <div class="field"><label>Fianza (€) — 1 mensualidad</label><input type="number" id="eco_fianza" placeholder="950" step="0.01" readonly style="background:#f9f9f9;"></div>
-      <div class="field"><label>Garantía adicional (€)</label><input type="number" id="eco_garantia" placeholder="950" step="0.01" readonly style="background:#f9f9f9;"></div>
+      <div class="field"><label>Fianza (€) — 1 mensualidad</label><input type="number" id="eco_fianza" placeholder="950" step="0.01" readonly style="background:var(--gris-fondo);"></div>
+      <div class="field"><label>Garantía adicional (€)</label><input type="number" id="eco_garantia" placeholder="950" step="0.01" readonly style="background:var(--gris-fondo);"></div>
     </div>
   </div>
 
@@ -468,7 +469,7 @@ function renderInventario() {
         <label>Observaciones</label>
         <input type="text" value="${item.obs}" onchange="inventarioItems[${i}].obs=this.value" placeholder="Opcional">
       </div>
-      <button onclick="removeItem(${i})" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:1.2rem;padding:0;margin-top:18px;">✕</button>
+      <button onclick="removeItem(${i})" style="background:none;border:none;cursor:pointer;color:var(--tinta-suave);font-size:1.2rem;padding:0;margin-top:18px;">✕</button>
     </div>
   `).join('');
 }
